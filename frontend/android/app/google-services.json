@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "627624562634",
+    "project_id": "journal-joe-fd4de",
+    "storage_bucket": "journal-joe-fd4de.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:627624562634:android:c19f5969f1129a3ff00933",
+        "android_client_info": {
+          "package_name": "com.example.news_app_clean_architecture"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArBA6cs3YYl72jIYHYiZSpoNCl0fDvZz0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
