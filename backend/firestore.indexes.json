@@ -1,0 +1,19 @@
+{
+    "indexes": [
+      {
+        "collectionId": "articles",
+        "fields": [
+          { "fieldPath": "author", "mode": "ASCENDING" },
+          { "fieldPath": "publishedAt", "mode": "DESCENDING" }
+        ]
+      },
+      {
+        "collectionId": "articles",
+        "fields": [
+          { "fieldPath": "category", "mode": "ASCENDING" },
+          { "fieldPath": "publishedAt", "mode": "DESCENDING" }
+        ]
+      }
+    ]
+  }
+  

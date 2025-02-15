@@ -26,15 +26,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -59,5 +53,25 @@ class DefaultFirebaseOptions {
     projectId: 'journal-joe-fd4de',
     databaseURL: 'https://journal-joe-fd4de-default-rtdb.firebaseio.com',
     storageBucket: 'journal-joe-fd4de.firebasestorage.app',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyDJOs6kV2GT68zREntv9M3ZedEsRP_N3S0',
+    appId: '1:627624562634:ios:cc7d2aff8b00143cf00933',
+    messagingSenderId: '627624562634',
+    projectId: 'journal-joe-fd4de',
+    databaseURL: 'https://journal-joe-fd4de-default-rtdb.firebaseio.com',
+    storageBucket: 'journal-joe-fd4de.firebasestorage.app',
+    iosBundleId: 'com.example.frontend',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyDJOs6kV2GT68zREntv9M3ZedEsRP_N3S0',
+    appId: '1:627624562634:ios:cc7d2aff8b00143cf00933',
+    messagingSenderId: '627624562634',
+    projectId: 'journal-joe-fd4de',
+    databaseURL: 'https://journal-joe-fd4de-default-rtdb.firebaseio.com',
+    storageBucket: 'journal-joe-fd4de.firebasestorage.app',
+    iosBundleId: 'com.example.frontend',
   );
 }
