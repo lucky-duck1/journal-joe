@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import '../../../../domain/entities/article.dart';
 
 abstract class LocalArticlesEvent extends Equatable {
-  final ArticleEntity ? article;
+  final ArticleEntity? article;
 
   const LocalArticlesEvent({this.article});
 
@@ -21,4 +21,9 @@ class RemoveArticle extends LocalArticlesEvent {
 
 class SaveArticle extends LocalArticlesEvent {
   const SaveArticle(ArticleEntity article) : super(article: article);
+}
+
+class SubmitArticleEvent extends LocalArticlesEvent {
+  final ArticleEntity article;
+  SubmitArticleEvent(this.article);
 }

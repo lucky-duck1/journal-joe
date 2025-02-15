@@ -5,6 +5,7 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 import 'package:news_app_clean_architecture/features/daily_news/presentation/pages/home/daily_news.dart';
 import 'config/theme/app_themes.dart';
 import 'features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
+import 'features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 import 'injection_container.dart';
 
 Future<void> main() async {
@@ -19,13 +20,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<RemoteArticlesBloc>(
-      create: (context) => sl()..add(const GetArticles()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<RemoteArticlesBloc>(
+          create: (context) => sl()..add(const GetArticles()),
+        ),
+        BlocProvider<LocalArticleBloc>(
+          // ✅ Ensure LocalArticleBloc is globally available
+          create: (context) => sl<LocalArticleBloc>(),
+        ),
+      ],
       child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: theme(),
-          onGenerateRoute: AppRoutes.onGenerateRoutes,
-          home: const DailyNews()),
+        debugShowCheckedModeBanner: false,
+        theme: theme(),
+        onGenerateRoute: AppRoutes.onGenerateRoutes,
+        home: const DailyNews(),
+      ),
     );
   }
 }

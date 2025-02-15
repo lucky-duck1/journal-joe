@@ -12,6 +12,12 @@ dependencies:
   flutter:
     sdk: flutter
 
+  #image selector
+  image_picker: ^0.8.5+3
+
+  #UI
+  formz: ^0.4.0
+
   cupertino_icons: ^1.0.2
 
   #icon
