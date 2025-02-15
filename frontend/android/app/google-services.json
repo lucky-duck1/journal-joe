@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "627624562634",
+    "firebase_url": "https://journal-joe-fd4de-default-rtdb.firebaseio.com",
+    "project_id": "journal-joe-fd4de",
+    "storage_bucket": "journal-joe-fd4de.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:627624562634:android:e4f86e12ea008465f00933",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArBA6cs3YYl72jIYHYiZSpoNCl0fDvZz0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
