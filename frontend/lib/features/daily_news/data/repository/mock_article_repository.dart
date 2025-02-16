@@ -1,3 +1,4 @@
+import 'dart:io'; // To handle local images
 import 'package:dio/dio.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
@@ -58,8 +59,18 @@ class MockArticleRepository implements ArticleRepository {
   }
 
   // ✅ New Method for Creating Articles
+  @override
   Future<void> submitArticle(ArticleEntity article) async {
     await Future.delayed(const Duration(seconds: 1));
-    _submittedArticles.add(article); // Store new articles separately
+
+    // If it's a local image, simulate storing it in the local file system
+    if (article.urlToImage != null && article.urlToImage!.startsWith('/')) {
+      // Simulate a local file path for the image (e.g., "/path/to/local/image.jpg")
+      // You could implement actual file storage logic here if necessary
+      print('Saving local image at path: ${article.urlToImage}');
+    }
+
+    // Store new articles separately
+    _submittedArticles.add(article); // Add to submitted articles
   }
 }

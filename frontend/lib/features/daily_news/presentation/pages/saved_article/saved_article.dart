@@ -44,9 +44,10 @@ class SavedArticles extends HookWidget {
         if (state is LocalArticlesLoading) {
           return const Center(child: CupertinoActivityIndicator());
         } else if (state is LocalArticlesDone) {
-          return _buildArticlesList(state.articles);
+          return _buildArticlesList(
+              state.articles); // ✅ Dynamically updates list
         }
-        return Container();
+        return const Center(child: Text("Error loading articles"));
       },
     );
   }
@@ -78,7 +79,9 @@ class SavedArticles extends HookWidget {
   }
 
   void _onRemoveArticle(BuildContext context, ArticleEntity article) {
-    BlocProvider.of<LocalArticleBloc>(context).add(RemoveArticle(article));
+    final bloc = BlocProvider.of<LocalArticleBloc>(context);
+    bloc.add(RemoveArticle(article)); // ✅ Remove the article
+    bloc.add(GetSavedArticles()); // ✅ Refresh the list dynamically
   }
 
   void _onArticlePressed(BuildContext context, ArticleEntity article) {

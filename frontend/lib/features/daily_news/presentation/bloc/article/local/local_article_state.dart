@@ -12,6 +12,10 @@ abstract class LocalArticlesState extends Equatable {
   List<Object?> get props => [articles, error];
 }
 
+class LocalArticlesInitial extends LocalArticlesState {
+  const LocalArticlesInitial();
+}
+
 // Loading State
 class LocalArticlesLoading extends LocalArticlesState {
   const LocalArticlesLoading();

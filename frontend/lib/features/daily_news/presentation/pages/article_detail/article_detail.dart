@@ -1,3 +1,4 @@
+import 'dart:io'; // Import for File handling
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -80,13 +81,31 @@ class ArticleDetailsView extends HookWidget {
     );
   }
 
+  // Updated Image Handling: Check if the image is remote or local
   Widget _buildArticleImage() {
-    return Container(
-      width: double.maxFinite,
-      height: 250,
-      margin: const EdgeInsets.only(top: 14),
-      child: Image.network(article!.urlToImage!, fit: BoxFit.cover),
-    );
+    if (article!.urlToImage!.startsWith("http")) {
+      // Handle remote image URL
+      return Container(
+        width: double.maxFinite,
+        height: 250,
+        margin: const EdgeInsets.only(top: 14),
+        child: Image.network(
+          article!.urlToImage!,
+          fit: BoxFit.cover,
+        ),
+      );
+    } else {
+      // Handle local file path
+      return Container(
+        width: double.maxFinite,
+        height: 250,
+        margin: const EdgeInsets.only(top: 14),
+        child: Image.file(
+          File(article!.urlToImage!), // Convert path to File
+          fit: BoxFit.cover,
+        ),
+      );
+    }
   }
 
   Widget _buildArticleDescription() {

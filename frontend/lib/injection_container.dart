@@ -15,15 +15,17 @@ import 'features/daily_news/presentation/bloc/article/local/local_article_bloc.d
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
-  final database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  final database =
+      await $FloorAppDatabase.databaseBuilder('app_database.db').build();
   sl.registerSingleton<AppDatabase>(database);
-  
+
   // Dio
   sl.registerSingleton<Dio>(Dio());
 
   // Use the Mock Repository instead of the real one
-  sl.registerSingleton<ArticleRepository>(MockArticleRepository());  // Register the Mock Repository
-  
+  sl.registerSingleton<ArticleRepository>(
+      MockArticleRepository()); // Register the Mock Repository
+
   // UseCases
   sl.registerSingleton<GetArticleUseCase>(GetArticleUseCase(sl()));
   sl.registerSingleton<GetSavedArticleUseCase>(GetSavedArticleUseCase(sl()));
@@ -32,5 +34,6 @@ Future<void> initializeDependencies() async {
 
   // Blocs
   sl.registerFactory<RemoteArticlesBloc>(() => RemoteArticlesBloc(sl()));
-  sl.registerFactory<LocalArticleBloc>(() => LocalArticleBloc(sl(), sl(), sl()));
+  sl.registerFactory<LocalArticleBloc>(
+      () => LocalArticleBloc(sl(), sl(), sl(), sl()));
 }

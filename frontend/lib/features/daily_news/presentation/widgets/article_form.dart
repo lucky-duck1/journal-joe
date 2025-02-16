@@ -1,4 +1,4 @@
-import 'dart:io';  // ✅ Import for File
+import 'dart:io'; // ✅ Import for File handling
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -30,11 +30,9 @@ class _ArticleFormState extends State<ArticleForm> {
     final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       setState(() {
-        _selectedImage = File(pickedImage.path);  // ✅ Convert XFile to File
+        _selectedImage = File(pickedImage.path);
       });
-      if (widget.onImagePicked != null) {
-        widget.onImagePicked!(_selectedImage);
-      }
+      widget.onImagePicked?.call(_selectedImage);
     }
   }
 
@@ -43,54 +41,80 @@ class _ArticleFormState extends State<ArticleForm> {
     return Form(
       key: widget.formKey,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Title Input
           TextFormField(
             controller: widget.titleController,
-            decoration: const InputDecoration(labelText: 'Title'),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Title cannot be empty';
-              }
-              return null;
-            },
+            decoration: const InputDecoration(
+              labelText: 'Title',
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) =>
+                value == null || value.isEmpty ? 'Title cannot be empty' : null,
           ),
           const SizedBox(height: 16),
+
+          // Description Input
           TextFormField(
             controller: widget.descriptionController,
-            decoration: const InputDecoration(labelText: 'Description'),
+            decoration: const InputDecoration(
+              labelText: 'Description',
+              border: OutlineInputBorder(),
+            ),
             maxLines: 3,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Description cannot be empty';
-              }
-              return null;
-            },
+            validator: (value) => value == null || value.isEmpty
+                ? 'Description cannot be empty'
+                : null,
           ),
           const SizedBox(height: 16),
+
+          // Content Input
           TextFormField(
             controller: widget.contentController,
-            decoration: const InputDecoration(labelText: 'Content (Markdown Supported)'),
+            decoration: const InputDecoration(
+              labelText: 'Content (Markdown Supported)',
+              border: OutlineInputBorder(),
+            ),
             maxLines: 5,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Content cannot be empty';
-              }
-              return null;
-            },
+            validator: (value) => value == null || value.isEmpty
+                ? 'Content cannot be empty'
+                : null,
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _pickImage,
-            child: const Text("Pick an Image"),
+
+          // Image Picker Button
+          Row(
+            children: [
+              ElevatedButton.icon(
+                onPressed: _pickImage,
+                icon: const Icon(Icons.photo),
+                label: Text(
+                    _selectedImage == null ? "Pick an Image" : "Change Image"),
+              ),
+              if (_selectedImage == null)
+                const Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text(
+                    "No image selected",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+            ],
           ),
-          if (_selectedImage != null) ...[
-            const SizedBox(height: 8),
-            Image.file(
-              _selectedImage!,
-              height: 100,
-              fit: BoxFit.cover,
+          const SizedBox(height: 10),
+
+          // Display selected image
+          if (_selectedImage != null)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.file(
+                _selectedImage!,
+                height: 150,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
-          ],
         ],
       ),
     );

@@ -1,3 +1,4 @@
+import 'dart:io'; // ✅ Import to handle local images
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,58 +31,101 @@ class ArticleWidget extends StatelessWidget {
           children: [
             _buildImage(context),
             _buildTitleAndDescription(),
-            _buildRemovableArea(),
+            _buildRemovableArea(context),
           ],
         ),
       ),
     );
   }
 
+  // ✅ Modified _buildImage to support both local and URL images
   Widget _buildImage(BuildContext context) {
-    return CachedNetworkImage(
-        imageUrl: article!.urlToImage!,
-        imageBuilder: (context, imageProvider) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.08),
-                      image: DecorationImage(
-                          image: imageProvider, fit: BoxFit.cover)),
+    final imageUrl = article!.urlToImage;
+
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      // Check if the image URL is a local file path or a remote URL
+      if (imageUrl.startsWith('http')) {
+        // If it's a URL, use CachedNetworkImage
+        return CachedNetworkImage(
+          imageUrl: imageUrl,
+          imageBuilder: (context, imageProvider) => Padding(
+            padding: const EdgeInsetsDirectional.only(end: 14),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width / 3,
+                height: double.maxFinite,
+                decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.08),
+                    image: DecorationImage(
+                        image: imageProvider, fit: BoxFit.cover)),
+              ),
+            ),
+          ),
+          progressIndicatorBuilder: (context, url, downloadProgress) => Padding(
+            padding: const EdgeInsetsDirectional.only(end: 14),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width / 3,
+                height: double.maxFinite,
+                child: CupertinoActivityIndicator(),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.08),
                 ),
               ),
             ),
-        progressIndicatorBuilder: (context, url, downloadProgress) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  child: CupertinoActivityIndicator(),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
-                  ),
+          ),
+          errorWidget: (context, url, error) => Padding(
+            padding: const EdgeInsetsDirectional.only(end: 14),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: Container(
+                width: MediaQuery.of(context).size.width / 3,
+                height: double.maxFinite,
+                child: Icon(Icons.error),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.08),
                 ),
               ),
             ),
-        errorWidget: (context, url, error) => Padding(
-              padding: const EdgeInsetsDirectional.only(end: 14),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width / 3,
-                  height: double.maxFinite,
-                  child: Icon(Icons.error),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
-                  ),
+          ),
+        );
+      } else {
+        // If it's a local file path, use FileImage
+        return Padding(
+          padding: const EdgeInsetsDirectional.only(end: 14),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20.0),
+            child: Container(
+              width: MediaQuery.of(context).size.width / 3,
+              height: double.maxFinite,
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.08),
+                image: DecorationImage(
+                  image: FileImage(File(imageUrl)), // ✅ Handle local file
+                  fit: BoxFit.cover,
                 ),
               ),
-            ));
+            ),
+          ),
+        );
+      }
+    } else {
+      // If there's no image, show a placeholder
+      return Padding(
+        padding: const EdgeInsetsDirectional.only(end: 14),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20.0),
+          child: Container(
+            width: MediaQuery.of(context).size.width / 3,
+            height: double.maxFinite,
+            color: Colors.grey.withOpacity(0.2), // Placeholder color
+            child: Icon(Icons.image), // Placeholder icon
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildTitleAndDescription() {
@@ -135,10 +179,10 @@ class ArticleWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildRemovableArea() {
-    if (isRemovable!) {
+  Widget _buildRemovableArea(BuildContext context) {
+    if (isRemovable == true) {
       return GestureDetector(
-        onTap: _onRemove,
+        onTap: () => _onRemove(context), // ✅ Pass context explicitly
         child: const Padding(
           padding: EdgeInsets.symmetric(horizontal: 8),
           child: Icon(Icons.remove_circle_outline, color: Colors.red),
@@ -154,9 +198,14 @@ class ArticleWidget extends StatelessWidget {
     }
   }
 
-  void _onRemove() {
+  void _onRemove(BuildContext context) {
     if (onRemove != null) {
-      onRemove!(article!);
+      onRemove!(article!); // ✅ Call the remove function
+
+      // ✅ Show a confirmation message when article is removed
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Article removed")),
+      );
     }
   }
 }
