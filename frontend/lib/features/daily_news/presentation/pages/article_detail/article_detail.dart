@@ -34,17 +34,37 @@ class ArticleDetailsView extends HookWidget {
           child: const Icon(Ionicons.chevron_back, color: Colors.black),
         ),
       ),
+      backgroundColor:
+          Colors.white, // Set background color to white for a cleaner look
     );
   }
 
   Widget _buildBody() {
     return SingleChildScrollView(
-      child: Column(
-        children: [
-          _buildArticleTitleAndDate(),
-          _buildArticleImage(),
-          _buildArticleDescription(),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(16.0), // Add some padding for spacing
+        child: Container(
+          padding: const EdgeInsets.all(20.0), // Padding inside the container
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8.0),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 7.0,
+                spreadRadius: 2.0,
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildArticleTitleAndDate(),
+              _buildArticleImage(),
+              _buildArticleDescription(),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -89,9 +109,12 @@ class ArticleDetailsView extends HookWidget {
         width: double.maxFinite,
         height: 250,
         margin: const EdgeInsets.only(top: 14),
-        child: Image.network(
-          article!.urlToImage!,
-          fit: BoxFit.cover,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12.0),
+          child: Image.network(
+            article!.urlToImage!,
+            fit: BoxFit.cover,
+          ),
         ),
       );
     } else {
@@ -100,9 +123,12 @@ class ArticleDetailsView extends HookWidget {
         width: double.maxFinite,
         height: 250,
         margin: const EdgeInsets.only(top: 14),
-        child: Image.file(
-          File(article!.urlToImage!), // Convert path to File
-          fit: BoxFit.cover,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12.0),
+          child: Image.file(
+            File(article!.urlToImage!), // Convert path to File
+            fit: BoxFit.cover,
+          ),
         ),
       );
     }

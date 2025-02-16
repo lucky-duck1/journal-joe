@@ -55,6 +55,34 @@ class _ArticleFormState extends State<ArticleForm> {
           ),
           const SizedBox(height: 16),
 
+          // Image Picker Widget (moved before description)
+          GestureDetector(
+            onTap: _pickImage,
+            child: Container(
+              width: double.infinity,
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey),
+              ),
+              child: _selectedImage == null
+                  ? const Center(
+                      child: Text('No Image Selected',
+                          style: TextStyle(color: Colors.black54)))
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.file(
+                        _selectedImage!,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                    ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
           // Description Input
           TextFormField(
             controller: widget.descriptionController,
@@ -73,7 +101,7 @@ class _ArticleFormState extends State<ArticleForm> {
           TextFormField(
             controller: widget.contentController,
             decoration: const InputDecoration(
-              labelText: 'Content (Markdown Supported)',
+              labelText: 'Content of the article',
               border: OutlineInputBorder(),
             ),
             maxLines: 5,

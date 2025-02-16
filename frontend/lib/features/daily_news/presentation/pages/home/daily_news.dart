@@ -101,7 +101,7 @@ class DailyNews extends StatelessWidget {
           final result = await Navigator.pushNamed(context, '/AddArticle');
           if (result == true) {
             // ✅ Refresh articles when returning from AddArticlePage
-            context.read<LocalArticleBloc>().add(GetSavedArticles());
+            context.read<LocalArticleBloc>().add(const GetSavedArticles());
           }
         },
         child: const Icon(Icons.add),

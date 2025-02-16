@@ -95,12 +95,8 @@ class _AddArticlePageBodyState extends State<AddArticlePageBody> {
                       titleController: _titleController,
                       descriptionController: _descriptionController,
                       contentController: _contentController,
+                      onImagePicked: _onImagePicked, // Image picking callback
                     ),
-                    const SizedBox(height: 16),
-
-                    // Image Picker Widget (Now the only image selection area)
-                    ImagePickerWidget(onImagePicked: _onImagePicked),
-
                     const SizedBox(height: 16),
 
                     // Submit Button
