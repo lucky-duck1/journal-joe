@@ -11,7 +11,6 @@ class MockArticleRepository implements ArticleRepository {
   @override
   Future<DataState<List<ArticleEntity>>> getNewsArticles() async {
     await Future.delayed(const Duration(seconds: 1));
-
     try {
       List<ArticleEntity> articles = [
             const ArticleEntity(
@@ -28,13 +27,14 @@ class MockArticleRepository implements ArticleRepository {
             ),
           ] +
           _submittedArticles;
-
       return DataSuccess(articles);
     } catch (e) {
-      return DataFailed(DioError(
-        requestOptions: RequestOptions(path: ''),
-        error: e.toString(),
-      ));
+      return DataFailed(
+        DioError(
+          requestOptions: RequestOptions(path: ''),
+          error: e.toString(),
+        ),
+      );
     }
   }
 
@@ -45,8 +45,9 @@ class MockArticleRepository implements ArticleRepository {
   }
 
   @override
-  Future<void> saveArticle(ArticleEntity article) async {
+  Future<void> saveArticle(ArticleEntity article, {File? mediaFile}) async {
     await Future.delayed(const Duration(seconds: 1));
+    // Optionally, you can process mediaFile here if needed (for mock, we ignore it)
     _savedArticles.add(article);
   }
 
@@ -56,14 +57,13 @@ class MockArticleRepository implements ArticleRepository {
     _savedArticles.removeWhere((savedArticle) => savedArticle.id == article.id);
   }
 
-  // ✅ Ensure Unique IDs When Submitting Articles
   @override
-  Future<void> submitArticle(ArticleEntity article) async {
+  Future<void> submitArticle(ArticleEntity article, {File? mediaFile}) async {
     await Future.delayed(const Duration(seconds: 1));
-
+    // Simulate assigning a new unique ID when submitting
     int newId = DateTime.now().millisecondsSinceEpoch;
     ArticleEntity newArticle = article.copyWith(id: newId);
-
+    // Optionally, process mediaFile if needed (for mock, we ignore it)
     _submittedArticles.add(newArticle);
   }
 }

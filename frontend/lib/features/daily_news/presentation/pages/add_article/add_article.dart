@@ -6,6 +6,9 @@ import '../../bloc/article/local/add_article_cubit.dart';
 import '../../bloc/article/local/image_picker_cubit.dart';
 import '../../bloc/article/local/local_article_bloc.dart';
 import '../../bloc/article/local/local_article_state.dart';
+import '../../bloc/article/remote/remote_article_bloc.dart';
+import '../../bloc/article/remote/remote_article_event.dart';
+import '../../bloc/article/remote/remote_article_state.dart';
 import '../../widgets/article_form.dart';
 import '../../widgets/image_picker_widget.dart'; // The custom image picker widget
 
@@ -20,6 +23,9 @@ class AddArticlePage extends StatelessWidget {
             create: (context) =>
                 AddArticleCubit(context.read<LocalArticleBloc>())),
         BlocProvider(create: (context) => ImagePickerCubit()),
+        BlocProvider(
+            create: (context) =>
+                RemoteArticlesBloc(context.read(), context.read())),
       ],
       child: const AddArticlePageBody(),
     );
@@ -145,6 +151,19 @@ class _AddArticlePageBodyState extends State<AddArticlePageBody> {
             description: description,
             content: content,
             imageFile: _selectedImage, // Pass the selected image
+          );
+
+      // Dispatch the remote article submission event
+      context.read<RemoteArticlesBloc>().add(
+            SubmitArticleRemoteEvent(
+              ArticleEntity(
+                title: title,
+                description: description,
+                content: content,
+                urlToImage: _selectedImage?.path,
+              ),
+              mediaFile: _selectedImage,
+            ),
           );
     }
   }

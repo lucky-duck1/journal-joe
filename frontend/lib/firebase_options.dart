@@ -30,10 +30,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -73,5 +70,14 @@ class DefaultFirebaseOptions {
     databaseURL: 'https://journal-joe-fd4de-default-rtdb.firebaseio.com',
     storageBucket: 'journal-joe-fd4de.firebasestorage.app',
     iosBundleId: 'com.example.frontend',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDJOs6kV2GT68zREntv9M3ZedEsRP_N3S0',
+    appId: '1:627624562634:ios:cc7d2aff8b00143cf00933',
+    messagingSenderId: '627624562634',
+    projectId: 'journal-joe-fd4de',
+    databaseURL: 'https://journal-joe-fd4de-default-rtdb.firebaseio.com',
+    storageBucket: 'journal-joe-fd4de.firebasestorage.app',
   );
 }

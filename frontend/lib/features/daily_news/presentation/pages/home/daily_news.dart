@@ -6,6 +6,7 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_event.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_event.dart';
 import '../../../domain/entities/article.dart';
 import '../../widgets/article_tile.dart';
 
@@ -41,14 +42,16 @@ class DailyNews extends StatelessWidget {
       builder: (context, remoteState) {
         return BlocBuilder<LocalArticleBloc, LocalArticlesState>(
           builder: (context, localState) {
-            if (remoteState is RemoteArticlesLoading) {
+            if (remoteState is RemoteArticlesLoading ||
+                localState is LocalArticlesLoading) {
               return Scaffold(
                 appBar: _buildAppbar(context),
                 body: const Center(child: CupertinoActivityIndicator()),
               );
             }
 
-            if (remoteState is RemoteArticlesError) {
+            if (remoteState is RemoteArticlesError ||
+                localState is LocalArticlesError) {
               return Scaffold(
                 appBar: _buildAppbar(context),
                 body: const Center(child: Icon(Icons.refresh)),
@@ -102,6 +105,7 @@ class DailyNews extends StatelessWidget {
           if (result == true) {
             // ✅ Refresh articles when returning from AddArticlePage
             context.read<LocalArticleBloc>().add(const GetSavedArticles());
+            context.read<RemoteArticlesBloc>().add(const GetArticles());
           }
         },
         child: const Icon(Icons.add),

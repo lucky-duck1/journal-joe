@@ -8,6 +8,9 @@ import '../../../domain/entities/article.dart';
 import '../../bloc/article/local/local_article_bloc.dart';
 import '../../bloc/article/local/local_article_event.dart';
 import '../../bloc/article/local/local_article_state.dart';
+import '../../bloc/article/remote/remote_article_bloc.dart';
+import '../../bloc/article/remote/remote_article_state.dart';
+import '../../bloc/article/remote/remote_article_event.dart';
 import '../../widgets/article_tile.dart';
 
 class SavedArticles extends HookWidget {
@@ -15,8 +18,15 @@ class SavedArticles extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<LocalArticleBloc>()..add(const GetSavedArticles()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => sl<LocalArticleBloc>()..add(const GetSavedArticles()),
+        ),
+        BlocProvider(
+          create: (_) => sl<RemoteArticlesBloc>()..add(const GetArticles()),
+        ),
+      ],
       child: Scaffold(
         appBar: _buildAppBar(),
         body: _buildBody(),
@@ -39,15 +49,27 @@ class SavedArticles extends HookWidget {
   }
 
   Widget _buildBody() {
-    return BlocBuilder<LocalArticleBloc, LocalArticlesState>(
-      builder: (context, state) {
-        if (state is LocalArticlesLoading) {
-          return const Center(child: CupertinoActivityIndicator());
-        } else if (state is LocalArticlesDone) {
-          return _buildArticlesList(
-              state.articles); // ✅ Dynamically updates list
-        }
-        return const Center(child: Text("Error loading articles"));
+    return BlocBuilder<RemoteArticlesBloc, RemoteArticlesState>(
+      builder: (context, remoteState) {
+        return BlocBuilder<LocalArticleBloc, LocalArticlesState>(
+          builder: (context, localState) {
+            if (remoteState is RemoteArticlesLoading ||
+                localState is LocalArticlesLoading) {
+              return const Center(child: CupertinoActivityIndicator());
+            } else if (remoteState is RemoteArticlesDone &&
+                localState is LocalArticlesDone) {
+              final articles = [
+                ...localState.articles,
+                ...remoteState.articles!
+              ];
+              return _buildArticlesList(articles);
+            } else if (remoteState is RemoteArticlesError ||
+                localState is LocalArticlesError) {
+              return const Center(child: Text("Error loading articles"));
+            }
+            return const Center(child: Text("No articles available"));
+          },
+        );
       },
     );
   }

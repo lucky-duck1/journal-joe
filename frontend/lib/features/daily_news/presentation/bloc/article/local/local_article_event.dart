@@ -1,14 +1,14 @@
+import 'dart:io';
 import 'package:equatable/equatable.dart';
-
 import '../../../../domain/entities/article.dart';
 
 abstract class LocalArticlesEvent extends Equatable {
   final ArticleEntity? article;
-
-  const LocalArticlesEvent({this.article});
+  final File? mediaFile;
+  const LocalArticlesEvent({this.article, this.mediaFile});
 
   @override
-  List<Object> get props => [article!];
+  List<Object?> get props => [article, mediaFile];
 }
 
 class GetSavedArticles extends LocalArticlesEvent {
@@ -20,10 +20,13 @@ class RemoveArticle extends LocalArticlesEvent {
 }
 
 class SaveArticle extends LocalArticlesEvent {
-  const SaveArticle(ArticleEntity article) : super(article: article);
+  // Updated to include an optional mediaFile parameter.
+  const SaveArticle(ArticleEntity article, {File? mediaFile})
+      : super(article: article, mediaFile: mediaFile);
 }
 
 class SubmitArticleEvent extends LocalArticlesEvent {
-  final ArticleEntity article;
-  SubmitArticleEvent(this.article);
+  // Updated to include an optional mediaFile parameter.
+  const SubmitArticleEvent(ArticleEntity article, {File? mediaFile})
+      : super(article: article, mediaFile: mediaFile);
 }
