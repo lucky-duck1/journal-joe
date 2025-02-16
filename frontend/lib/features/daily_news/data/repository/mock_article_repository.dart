@@ -1,20 +1,18 @@
-import 'dart:io'; // To handle local images
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:news_app_clean_architecture/core/resources/data_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart';
 
 class MockArticleRepository implements ArticleRepository {
-  // In-memory storage for saved and newly created articles
   final List<ArticleEntity> _savedArticles = [];
-  final List<ArticleEntity> _submittedArticles =
-      []; // New list for created articles
+  final List<ArticleEntity> _submittedArticles = [];
 
   @override
   Future<DataState<List<ArticleEntity>>> getNewsArticles() async {
-    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
+    await Future.delayed(const Duration(seconds: 1));
+
     try {
-      // Combine mock articles and newly created articles
       List<ArticleEntity> articles = [
             const ArticleEntity(
               id: 1,
@@ -29,7 +27,7 @@ class MockArticleRepository implements ArticleRepository {
               content: 'Content of Mock Article 1',
             ),
           ] +
-          _submittedArticles; // Append submitted articles
+          _submittedArticles;
 
       return DataSuccess(articles);
     } catch (e) {
@@ -58,19 +56,14 @@ class MockArticleRepository implements ArticleRepository {
     _savedArticles.removeWhere((savedArticle) => savedArticle.id == article.id);
   }
 
-  // ✅ New Method for Creating Articles
+  // ✅ Ensure Unique IDs When Submitting Articles
   @override
   Future<void> submitArticle(ArticleEntity article) async {
     await Future.delayed(const Duration(seconds: 1));
 
-    // If it's a local image, simulate storing it in the local file system
-    if (article.urlToImage != null && article.urlToImage!.startsWith('/')) {
-      // Simulate a local file path for the image (e.g., "/path/to/local/image.jpg")
-      // You could implement actual file storage logic here if necessary
-      print('Saving local image at path: ${article.urlToImage}');
-    }
+    int newId = DateTime.now().millisecondsSinceEpoch;
+    ArticleEntity newArticle = article.copyWith(id: newId);
 
-    // Store new articles separately
-    _submittedArticles.add(article); // Add to submitted articles
+    _submittedArticles.add(newArticle);
   }
 }

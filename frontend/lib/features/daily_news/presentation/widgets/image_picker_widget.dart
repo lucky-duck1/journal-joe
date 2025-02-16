@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io'; // For file handling
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/article/local/image_picker_cubit.dart';
@@ -12,65 +12,37 @@ class ImagePickerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ImagePickerCubit, File?>(
       builder: (context, selectedImage) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image Picker Button
-            ElevatedButton.icon(
-              onPressed: () async {
-                await context.read<ImagePickerCubit>().pickImage();
-                onImagePicked?.call(context.read<ImagePickerCubit>().state);
-              },
-              icon: const Icon(Icons.photo),
-              label: Text(
-                  selectedImage == null ? "Pick an Image" : "Change Image"),
+        return GestureDetector(
+          onTap: () async {
+            // Trigger image picker on tap of the image container
+            await context.read<ImagePickerCubit>().pickImage();
+            // Update the state with the new image if selected
+            if (onImagePicked != null) {
+              onImagePicked!(context.read<ImagePickerCubit>().state);
+            }
+          },
+          child: Container(
+            width: double.infinity,
+            height: 200, // Adjust height as needed
+            decoration: BoxDecoration(
+              color: Colors.grey[300], // Background color for image holder
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey),
             ),
-            const SizedBox(height: 10),
-
-            // Show Image Preview (If Selected)
-            if (selectedImage != null)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.file(
-                  selectedImage, // Local image (FileImage)
-                  height: 150,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              )
-            else if (selectedImage == null &&
-                context
-                        .read<ImagePickerCubit>()
-                        .state
-                        ?.path
-                        .startsWith('http') ==
-                    true)
-              // If selected image is a URL, use NetworkImage
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  context.read<ImagePickerCubit>().state?.path ?? '',
-                  height: 150,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              )
-            else
-              // Placeholder when no image is selected
-              Container(
-                height: 150,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: Colors.grey[300],
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: const Center(
-                  child: Text("No Image Selected",
-                      style: TextStyle(color: Colors.black54)),
-                ),
-              ),
-          ],
+            child: selectedImage == null
+                ? const Center(
+                    child: Text('No Image Selected',
+                        style: TextStyle(color: Colors.black54)))
+                : ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.file(
+                      selectedImage,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
+                  ),
+          ),
         );
       },
     );

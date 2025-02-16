@@ -35,7 +35,7 @@ class DailyNews extends StatelessWidget {
     );
   }
 
-  /// ✅ Now listens to both Remote & Local Articles
+  /// ✅ Merging Remote & Local Articles Without Duplicates
   _buildPage(BuildContext context) {
     return BlocBuilder<RemoteArticlesBloc, RemoteArticlesState>(
       builder: (context, remoteState) {
@@ -55,13 +55,21 @@ class DailyNews extends StatelessWidget {
               );
             }
 
-            // ✅ Merge Remote & Submitted Articles
             List<ArticleEntity> articles = [];
+
             if (remoteState is RemoteArticlesDone) {
               articles.addAll(remoteState.articles ?? []);
             }
+
             if (localState is LocalArticlesDone) {
-              articles.addAll(localState.articles);
+              final localArticles = localState.articles;
+
+              // ✅ Ensure unique articles (Prevent duplicates)
+              for (var localArticle in localArticles) {
+                if (!articles.any((article) => article.id == localArticle.id)) {
+                  articles.add(localArticle);
+                }
+              }
             }
 
             return _buildArticlesPage(context, articles);

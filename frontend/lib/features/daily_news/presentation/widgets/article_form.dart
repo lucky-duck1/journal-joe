@@ -82,39 +82,6 @@ class _ArticleFormState extends State<ArticleForm> {
                 : null,
           ),
           const SizedBox(height: 16),
-
-          // Image Picker Button
-          Row(
-            children: [
-              ElevatedButton.icon(
-                onPressed: _pickImage,
-                icon: const Icon(Icons.photo),
-                label: Text(
-                    _selectedImage == null ? "Pick an Image" : "Change Image"),
-              ),
-              if (_selectedImage == null)
-                const Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Text(
-                    "No image selected",
-                    style: TextStyle(color: Colors.red),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 10),
-
-          // Display selected image
-          if (_selectedImage != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.file(
-                _selectedImage!,
-                height: 150,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
         ],
       ),
     );

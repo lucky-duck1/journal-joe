@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:io'; // For File handling
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/article.dart';
@@ -7,7 +7,7 @@ import '../../bloc/article/local/image_picker_cubit.dart';
 import '../../bloc/article/local/local_article_bloc.dart';
 import '../../bloc/article/local/local_article_state.dart';
 import '../../widgets/article_form.dart';
-import '../../widgets/image_picker_widget.dart';
+import '../../widgets/image_picker_widget.dart'; // The custom image picker widget
 
 class AddArticlePage extends StatelessWidget {
   const AddArticlePage({Key? key}) : super(key: key);
@@ -30,16 +30,17 @@ class AddArticlePageBody extends StatefulWidget {
   const AddArticlePageBody({Key? key}) : super(key: key);
 
   @override
-  _AddArticlePageState createState() => _AddArticlePageState();
+  _AddArticlePageBodyState createState() => _AddArticlePageBodyState();
 }
 
-class _AddArticlePageState extends State<AddArticlePageBody> {
+class _AddArticlePageBodyState extends State<AddArticlePageBody> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   File? _selectedImage;
 
+  // Handle image picking
   void _onImagePicked(File? image) {
     setState(() {
       _selectedImage = image;
@@ -96,8 +97,13 @@ class _AddArticlePageState extends State<AddArticlePageBody> {
                       contentController: _contentController,
                     ),
                     const SizedBox(height: 16),
+
+                    // Image Picker Widget (Now the only image selection area)
                     ImagePickerWidget(onImagePicked: _onImagePicked),
+
                     const SizedBox(height: 16),
+
+                    // Submit Button
                     ElevatedButton(
                       onPressed: state is ArticleSubmissionLoading
                           ? null
