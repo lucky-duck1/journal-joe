@@ -16,9 +16,9 @@ import 'package:news_app_clean_architecture/features/daily_news/data/repository/
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
-  final database =
-      await $FloorAppDatabase.databaseBuilder('app_database.db').build();
-  sl.registerSingleton<AppDatabase>(database);
+  // final database =
+  //     await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  // sl.registerSingleton<AppDatabase>(database);
 
   // Dio
   sl.registerSingleton<Dio>(Dio());
