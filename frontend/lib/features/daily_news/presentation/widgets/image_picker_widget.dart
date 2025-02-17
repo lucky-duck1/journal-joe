@@ -1,7 +1,7 @@
 import 'dart:io'; // For file handling
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/article/local/image_picker_cubit.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/cubits/image_picker_cubit.dart';
 
 class ImagePickerWidget extends StatelessWidget {
   final void Function(File?)? onImagePicked;

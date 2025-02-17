@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import '../../../../domain/entities/article.dart';
-import '../../../../domain/repository/article_repository.dart'; // Import the repository
-import 'local_article_event.dart';
-import 'local_article_state.dart';
-import 'local_article_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart'; // Import the repository
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_event.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_state.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 
 class AddArticleCubit extends Cubit<LocalArticlesState> {
   final LocalArticleBloc _localArticleBloc;

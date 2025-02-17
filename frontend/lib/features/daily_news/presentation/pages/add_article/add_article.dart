@@ -2,14 +2,14 @@ import 'dart:io'; // For File handling
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import '../../../domain/entities/article.dart';
-import '../../bloc/article/local/add_article_cubit.dart';
-import '../../bloc/article/local/image_picker_cubit.dart';
-import '../../bloc/article/local/local_article_bloc.dart';
-import '../../bloc/article/local/local_article_state.dart';
-import '../../widgets/article_form.dart';
-import '../../widgets/image_picker_widget.dart'; // The custom image picker widget
-import '../../../domain/repository/article_repository.dart'; // Import the repository
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/cubits/add_article_cubit.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/cubits/image_picker_cubit.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_state.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/article_form.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/image_picker_widget.dart'; // The custom image picker widget
+import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart'; // Import the repository
 
 final sl = GetIt.instance; // Ensure dependency injection is used
 

@@ -25,6 +25,8 @@ But the learning will remain there.
 
 ### 4. Reflection and Future Directions
 
+There is something called technical debt, it´s like the output you get when you don´t listen the early advices of your grandma; and is something that changed me, obtained specifically from this project.
+
 ### 5. Proof of the project
 
 Include screenshots and videos of the final version of your project to visually demonstrate its functionality and design.
