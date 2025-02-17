@@ -1,4 +1,5 @@
-import 'dart:io'; // Import for File handling
+import 'dart:convert';
+import 'dart:typed_data'; // For Uint8List and base64 decoding
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -34,17 +35,16 @@ class ArticleDetailsView extends HookWidget {
           child: const Icon(Ionicons.chevron_back, color: Colors.black),
         ),
       ),
-      backgroundColor:
-          Colors.white, // Set background color to white for a cleaner look
+      backgroundColor: Colors.white,
     );
   }
 
   Widget _buildBody() {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(16.0), // Add some padding for spacing
+        padding: const EdgeInsets.all(16.0),
         child: Container(
-          padding: const EdgeInsets.all(20.0), // Padding inside the container
+          padding: const EdgeInsets.all(20.0),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(8.0),
@@ -75,7 +75,6 @@ class ArticleDetailsView extends HookWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title
           Text(
             article!.title!,
             style: const TextStyle(
@@ -83,9 +82,7 @@ class ArticleDetailsView extends HookWidget {
                 fontSize: 20,
                 fontWeight: FontWeight.w900),
           ),
-
           const SizedBox(height: 14),
-          // DateTime
           Row(
             children: [
               const Icon(Ionicons.time_outline, size: 16),
@@ -101,37 +98,81 @@ class ArticleDetailsView extends HookWidget {
     );
   }
 
-  // Updated Image Handling: Check if the image is remote or local
   Widget _buildArticleImage() {
-    if (article!.urlToImage!.startsWith("http")) {
-      // Handle remote image URL
-      return Container(
-        width: double.maxFinite,
-        height: 250,
-        margin: const EdgeInsets.only(top: 14),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12.0),
-          child: Image.network(
-            article!.urlToImage!,
-            fit: BoxFit.cover,
+    final imageUrl = article!.urlToImage;
+
+    if (imageUrl != null && imageUrl.isNotEmpty) {
+      if (imageUrl.startsWith("http")) {
+        // Remote image: load with Image.network (or CachedNetworkImage if desired)
+        return Container(
+          width: double.infinity,
+          height: 250,
+          margin: const EdgeInsets.only(top: 14),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12.0),
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                color: Colors.grey.withOpacity(0.2),
+                child: const Icon(Icons.error),
+              ),
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return const Center(child: CircularProgressIndicator());
+              },
+            ),
           ),
-        ),
-      );
+        );
+      } else if (imageUrl.startsWith("data:")) {
+        // Base64 encoded image: decode and display with Image.memory
+        try {
+          final commaIndex = imageUrl.indexOf(',');
+          final base64Str = imageUrl.substring(commaIndex + 1);
+          final Uint8List bytes = base64Decode(base64Str);
+          return Container(
+            width: double.infinity,
+            height: 250,
+            margin: const EdgeInsets.only(top: 14),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.0),
+              child: Image.memory(
+                bytes,
+                fit: BoxFit.cover,
+              ),
+            ),
+          );
+        } catch (e) {
+          return Container(
+            width: double.infinity,
+            height: 250,
+            margin: const EdgeInsets.only(top: 14),
+            child: Center(child: Text('Error decoding image: $e')),
+          );
+        }
+      } else {
+        // Unrecognized format: show a placeholder
+        return _placeholderImage();
+      }
     } else {
-      // Handle local file path
-      return Container(
-        width: double.maxFinite,
-        height: 250,
-        margin: const EdgeInsets.only(top: 14),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12.0),
-          child: Image.file(
-            File(article!.urlToImage!), // Convert path to File
-            fit: BoxFit.cover,
-          ),
-        ),
-      );
+      // No image provided: show a placeholder
+      return _placeholderImage();
     }
+  }
+
+  Widget _placeholderImage() {
+    return Container(
+      width: double.infinity,
+      height: 250,
+      margin: const EdgeInsets.only(top: 14),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12.0),
+        child: Container(
+          color: Colors.grey.withOpacity(0.2),
+          child: const Icon(Icons.image, size: 50),
+        ),
+      ),
+    );
   }
 
   Widget _buildArticleDescription() {

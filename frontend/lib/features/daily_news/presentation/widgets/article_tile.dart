@@ -1,7 +1,7 @@
-import 'dart:io'; // ✅ Import to handle local images
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../domain/entities/article.dart';
 
 class ArticleWidget extends StatelessWidget {
@@ -20,172 +20,143 @@ class ArticleWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: _onTap,
-      child: Container(
-        padding: const EdgeInsetsDirectional.only(
-            start: 14, end: 14, bottom: 7, top: 7),
-        height: MediaQuery.of(context).size.width / 2.2,
-        child: Row(
-          children: [
-            _buildImage(context),
-            _buildTitleAndDescription(),
-            _buildRemovableArea(context),
-          ],
+    // Wrapping the Card with InkWell gives us the ripple effect while keeping the material look.
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      clipBehavior: Clip
+          .antiAlias, // Ensures the ripple effect is confined within the card.
+      child: InkWell(
+        onTap: _onTap,
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          height: MediaQuery.of(context).size.width / 2.2,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildImage(context),
+              const SizedBox(width: 12),
+              Expanded(child: _buildTitleAndDescription()),
+              _buildRemovableArea(context),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // ✅ Modified _buildImage to support both local and URL images
   Widget _buildImage(BuildContext context) {
-    final imageUrl = article!.urlToImage;
+    final imageUrl = article?.urlToImage;
+    final imageWidth = MediaQuery.of(context).size.width / 3;
 
     if (imageUrl != null && imageUrl.isNotEmpty) {
-      // Check if the image URL is a local file path or a remote URL
       if (imageUrl.startsWith('http')) {
-        // If it's a URL, use CachedNetworkImage
-        return CachedNetworkImage(
-          imageUrl: imageUrl,
-          imageBuilder: (context, imageProvider) => Padding(
-            padding: const EdgeInsetsDirectional.only(end: 14),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20.0),
-              child: Container(
-                width: MediaQuery.of(context).size.width / 3,
-                height: double.maxFinite,
-                decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.08),
-                    image: DecorationImage(
-                        image: imageProvider, fit: BoxFit.cover)),
-              ),
-            ),
-          ),
-          progressIndicatorBuilder: (context, url, downloadProgress) => Padding(
-            padding: const EdgeInsetsDirectional.only(end: 14),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20.0),
-              child: Container(
-                width: MediaQuery.of(context).size.width / 3,
-                height: double.maxFinite,
-                child: CupertinoActivityIndicator(),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.08),
-                ),
-              ),
-            ),
-          ),
-          errorWidget: (context, url, error) => Padding(
-            padding: const EdgeInsetsDirectional.only(end: 14),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20.0),
-              child: Container(
-                width: MediaQuery.of(context).size.width / 3,
-                height: double.maxFinite,
-                child: Icon(Icons.error),
-                decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.08),
-                ),
-              ),
-            ),
-          ),
-        );
-      } else {
-        // If it's a local file path, use FileImage
-        return Padding(
-          padding: const EdgeInsetsDirectional.only(end: 14),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(20.0),
-            child: Container(
-              width: MediaQuery.of(context).size.width / 3,
-              height: double.maxFinite,
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.08),
-                image: DecorationImage(
-                  image: FileImage(File(imageUrl)), // ✅ Handle local file
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-        );
-      }
-    } else {
-      // If there's no image, show a placeholder
-      return Padding(
-        padding: const EdgeInsetsDirectional.only(end: 14),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20.0),
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(12),
           child: Container(
-            width: MediaQuery.of(context).size.width / 3,
-            height: double.maxFinite,
-            color: Colors.grey.withOpacity(0.2), // Placeholder color
-            child: Icon(Icons.image), // Placeholder icon
+            width: imageWidth,
+            height: double.infinity,
+            color: Colors.grey.withOpacity(0.1),
+            child: CachedNetworkImage(
+              imageUrl: imageUrl,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              errorWidget: (context, url, error) => Container(
+                color: Colors.grey.withOpacity(0.1),
+                child: const Icon(Icons.broken_image, color: Colors.grey),
+              ),
+            ),
           ),
-        ),
-      );
+        );
+      } else if (imageUrl.startsWith('data:')) {
+        final parts = imageUrl.split(',');
+        if (parts.length == 2) {
+          final bytes = base64Decode(parts[1]);
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              width: imageWidth,
+              height: double.infinity,
+              child: Image.memory(bytes, fit: BoxFit.cover),
+            ),
+          );
+        }
+      }
     }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: imageWidth,
+        height: double.infinity,
+        color: Colors.grey.withOpacity(0.1),
+        child: const Icon(Icons.image, color: Colors.grey),
+      ),
+    );
   }
 
   Widget _buildTitleAndDescription() {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 7),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          article?.title ?? '',
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontFamily: 'Butler',
+            fontWeight: FontWeight.w900,
+            fontSize: 18,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Expanded(
+          child: Text(
+            article?.description ?? '',
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[700],
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Row(
           children: [
-            // Title
+            Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
+            const SizedBox(width: 4),
             Text(
-              article!.title ?? '',
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontFamily: 'Butler',
-                fontWeight: FontWeight.w900,
-                fontSize: 18,
-                color: Colors.black87,
+              article?.publishedAt ?? '',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+                letterSpacing: 0.2,
               ),
-            ),
-
-            // Description
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  article!.description ?? '',
-                  maxLines: 2,
-                ),
-              ),
-            ),
-
-            // Datetime
-            Row(
-              children: [
-                const Icon(Icons.timeline_outlined, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  article!.publishedAt!,
-                  style: const TextStyle(
-                    fontSize: 12,
-                  ),
-                ),
-              ],
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 
   Widget _buildRemovableArea(BuildContext context) {
     if (isRemovable == true) {
-      return GestureDetector(
-        onTap: () => _onRemove(context), // ✅ Pass context explicitly
-        child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Icon(Icons.remove_circle_outline, color: Colors.red),
+      return Padding(
+        padding: const EdgeInsets.only(left: 8),
+        child: IconButton(
+          icon: Icon(
+            Icons.delete_outline,
+            color: Colors.red[400],
+            size: 24,
+          ),
+          onPressed: () => _onRemove(context),
         ),
       );
     }
@@ -193,16 +164,14 @@ class ArticleWidget extends StatelessWidget {
   }
 
   void _onTap() {
-    if (onArticlePressed != null) {
+    if (onArticlePressed != null && article != null) {
       onArticlePressed!(article!);
     }
   }
 
   void _onRemove(BuildContext context) {
-    if (onRemove != null) {
-      onRemove!(article!); // ✅ Call the remove function
-
-      // ✅ Show a confirmation message when article is removed
+    if (onRemove != null && article != null) {
+      onRemove!(article!);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Article removed")),
       );
