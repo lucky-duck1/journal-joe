@@ -1,29 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/remote/remote_article_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_event.dart';
-import '../../../domain/entities/article.dart';
 import '../../widgets/article_tile.dart';
 
 class DailyNews extends StatelessWidget {
   const DailyNews({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return _buildPage(context);
-  }
-
-  _buildAppbar(BuildContext context) {
+  PreferredSizeWidget _buildAppbar(BuildContext context) {
     return AppBar(
       title: const Text(
         'Daily News',
         style: TextStyle(color: Colors.black),
       ),
       actions: [
+        // Removed refresh button because API call is dispatched on Bloc initialization.
         GestureDetector(
           onTap: () => _onShowSavedArticlesViewTapped(context),
           child: const Padding(
@@ -35,8 +31,8 @@ class DailyNews extends StatelessWidget {
     );
   }
 
-  /// ✅ Merging Remote & Local Articles Without Duplicates
-  _buildPage(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<RemoteArticlesBloc, RemoteArticlesState>(
       builder: (context, remoteState) {
         return BlocBuilder<LocalArticleBloc, LocalArticlesState>(
@@ -46,12 +42,16 @@ class DailyNews extends StatelessWidget {
                 appBar: _buildAppbar(context),
                 body: const Center(child: CupertinoActivityIndicator()),
               );
-            }
-
-            if (remoteState is RemoteArticlesError) {
+            } else if (remoteState is RemoteArticlesError) {
               return Scaffold(
                 appBar: _buildAppbar(context),
-                body: const Center(child: Icon(Icons.refresh)),
+                body: Center(
+                  child: Text(
+                    "Error loading articles.\n${remoteState.error?.message ?? 'Unknown error'}",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ),
               );
             }
 
@@ -63,8 +63,7 @@ class DailyNews extends StatelessWidget {
 
             if (localState is LocalArticlesDone) {
               final localArticles = localState.articles;
-
-              // ✅ Ensure unique articles (Prevent duplicates)
+              // Ensure unique articles (prevent duplicates)
               for (var localArticle in localArticles) {
                 if (!articles.any((article) => article.id == localArticle.id)) {
                   articles.add(localArticle);
@@ -100,7 +99,7 @@ class DailyNews extends StatelessWidget {
         onPressed: () async {
           final result = await Navigator.pushNamed(context, '/AddArticle');
           if (result == true) {
-            // ✅ Refresh articles when returning from AddArticlePage
+            // Refresh saved local articles when returning from the AddArticle screen.
             context.read<LocalArticleBloc>().add(const GetSavedArticles());
           }
         },

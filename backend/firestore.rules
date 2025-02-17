@@ -5,7 +5,7 @@ service cloud.firestore {
     match /articles/{articleId} {
       // Allow anyone to read articles.
       allow read: if true;
-      
+
       // Allow create and update only if the user is authenticated and the document data meets the schema requirements.
       allow create, update: if request.auth != null
         // Ensure required fields exist and have the right type
@@ -13,15 +13,15 @@ service cloud.firestore {
         && request.resource.data.description is string
         && request.resource.data.content is string
         && request.resource.data.author is string
-        && request.resource.data.category is string
-        && request.resource.data.publishedAt is timestamp
-        && request.resource.data.thumbnailURL is string
+        //&& request.resource.data.category is string // Remove this line
+        && request.resource.data.publishedAt is string
+        && request.resource.data.urlToImage is string // Change thumbnailURL to urlToImage
         // Validate the 'source' map has required fields.
-        && request.resource.data.source is map
+        /*&& request.resource.data.source is map // Remove this section
         && request.resource.data.source.keys().hasAll(['id', 'name'])
         && request.resource.data.source.id is string
-        && request.resource.data.source.name is string;
-      
+        && request.resource.data.source.name is string;*/
+
       // For now, deny delete operations.
       allow delete: if false;
     }

@@ -11,6 +11,7 @@ import 'features/daily_news/domain/usecases/get_saved_article.dart';
 import 'features/daily_news/domain/usecases/remove_article.dart';
 import 'features/daily_news/domain/usecases/save_article.dart';
 import 'features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
+import 'package:news_app_clean_architecture/features/daily_news/data/repository/firebase_repository.dart';
 
 final sl = GetIt.instance;
 
@@ -22,9 +23,14 @@ Future<void> initializeDependencies() async {
   // Dio
   sl.registerSingleton<Dio>(Dio());
 
-  // Use the Mock Repository instead of the real one
-  sl.registerSingleton<ArticleRepository>(
-      MockArticleRepository()); // Register the Mock Repository
+  // // Use the Mock Repository instead of the real one
+  // sl.registerSingleton<ArticleRepository>(
+  //     MockArticleRepository()); // Register the Mock Repository
+
+  // Use the Firebase Repository instead of the Mock one
+  sl.registerLazySingleton<ArticleRepository>(
+    () => FirebaseArticleRepository(),
+  ); // Register the Firebase Repository
 
   // UseCases
   sl.registerSingleton<GetArticleUseCase>(GetArticleUseCase(sl()));

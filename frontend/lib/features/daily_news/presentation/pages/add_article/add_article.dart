@@ -1,6 +1,7 @@
 import 'dart:io'; // For File handling
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import '../../../domain/entities/article.dart';
 import '../../bloc/article/local/add_article_cubit.dart';
 import '../../bloc/article/local/image_picker_cubit.dart';
@@ -8,6 +9,9 @@ import '../../bloc/article/local/local_article_bloc.dart';
 import '../../bloc/article/local/local_article_state.dart';
 import '../../widgets/article_form.dart';
 import '../../widgets/image_picker_widget.dart'; // The custom image picker widget
+import '../../../domain/repository/article_repository.dart'; // Import the repository
+
+final sl = GetIt.instance; // Ensure dependency injection is used
 
 class AddArticlePage extends StatelessWidget {
   const AddArticlePage({Key? key}) : super(key: key);
@@ -17,8 +21,11 @@ class AddArticlePage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-            create: (context) =>
-                AddArticleCubit(context.read<LocalArticleBloc>())),
+          create: (context) => AddArticleCubit(
+            context.read<LocalArticleBloc>(),
+            sl<ArticleRepository>(), // ✅ Corrected dependency injection
+          ),
+        ),
         BlocProvider(create: (context) => ImagePickerCubit()),
       ],
       child: const AddArticlePageBody(),

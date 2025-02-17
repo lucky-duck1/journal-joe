@@ -1,15 +1,18 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path_provider/path_provider.dart'; // ✅ For local storage
+import 'package:path_provider/path_provider.dart';
 import '../../../../domain/entities/article.dart';
+import '../../../../domain/repository/article_repository.dart'; // Import the repository
 import 'local_article_event.dart';
 import 'local_article_state.dart';
 import 'local_article_bloc.dart';
 
 class AddArticleCubit extends Cubit<LocalArticlesState> {
   final LocalArticleBloc _localArticleBloc;
+  final ArticleRepository _articleRepository; // Add this
 
-  AddArticleCubit(this._localArticleBloc) : super(LocalArticlesInitial());
+  AddArticleCubit(this._localArticleBloc, this._articleRepository)
+      : super(LocalArticlesInitial()); // Update constructor
 
   Future<void> submitArticle({
     required String title,
@@ -26,7 +29,7 @@ class AddArticleCubit extends Cubit<LocalArticlesState> {
 
     String imagePath = "";
     if (imageFile != null) {
-      imagePath = await _saveImageLocally(imageFile); // ✅ Save locally
+      imagePath = await _saveImageLocally(imageFile); // Save locally
     }
 
     final newArticle = ArticleEntity(
@@ -36,22 +39,27 @@ class AddArticleCubit extends Cubit<LocalArticlesState> {
       content: content,
       author: "New Author",
       url: "",
-      urlToImage: imagePath, // ✅ Stores the correct local path
+      urlToImage: imagePath, // Stores the correct local path
       publishedAt: DateTime.now().toIso8601String(),
     );
 
-    _localArticleBloc.add(SubmitArticleEvent(newArticle));
+    try {
+      await _articleRepository.submitArticle(newArticle); // Submit to Firebase
+      _localArticleBloc
+          .add(SubmitArticleEvent(newArticle)); // Keep local submission
 
-    emit(const ArticleSubmissionSuccess());
+      emit(const ArticleSubmissionSuccess());
+    } catch (e) {
+      emit(ArticleSubmissionError(e.toString()));
+    }
   }
 
-  // ✅ Save the image locally and return the new path
   Future<String> _saveImageLocally(File imageFile) async {
     final directory = await getApplicationDocumentsDirectory();
     final fileName = imageFile.uri.pathSegments.last;
     final savedImagePath = '${directory.path}/$fileName';
 
     final localImage = await imageFile.copy(savedImagePath);
-    return localImage.path; // ✅ Returns local path
+    return localImage.path;
   }
 }
