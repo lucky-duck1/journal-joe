@@ -1,24 +1,26 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:news_app_clean_architecture/features/daily_news/domain/entities/article.dart';
-import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart'; // Import the repository
+import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_event.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
+import 'image_picker_cubit.dart';
 
 class AddArticleCubit extends Cubit<LocalArticlesState> {
   final LocalArticleBloc _localArticleBloc;
-  final ArticleRepository _articleRepository; // Add this
+  final ArticleRepository _articleRepository;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   AddArticleCubit(this._localArticleBloc, this._articleRepository)
-      : super(LocalArticlesInitial()); // Update constructor
+      : super(LocalArticlesInitial());
 
   Future<void> submitArticle({
     required String title,
     required String description,
     required String content,
-    File? imageFile,
+    ImageData? imageData,
   }) async {
     if (title.isEmpty || description.isEmpty || content.isEmpty) {
       emit(const ArticleSubmissionError("All fields are required."));
@@ -27,39 +29,31 @@ class AddArticleCubit extends Cubit<LocalArticlesState> {
 
     emit(const ArticleSubmissionLoading());
 
-    String imagePath = "";
-    if (imageFile != null) {
-      imagePath = await _saveImageLocally(imageFile); // Save locally
-    }
-
-    final newArticle = ArticleEntity(
-      id: DateTime.now().millisecondsSinceEpoch,
-      title: title,
-      description: description,
-      content: content,
-      author: "New Author",
-      url: "",
-      urlToImage: imagePath, // Stores the correct local path
-      publishedAt: DateTime.now().toIso8601String(),
-    );
-
     try {
-      await _articleRepository.submitArticle(newArticle); // Submit to Firebase
-      _localArticleBloc
-          .add(SubmitArticleEvent(newArticle)); // Keep local submission
+      String imageUrl = "";
+      if (imageData != null) {
+        final storageRef = _storage.ref().child('articles/${imageData.name}');
+        final uploadTask = storageRef.putData(imageData.bytes);
+        final snapshot = await uploadTask.whenComplete(() {});
+        imageUrl = await snapshot.ref.getDownloadURL();
+      }
 
+      final newArticle = ArticleEntity(
+        id: DateTime.now().millisecondsSinceEpoch,
+        title: title,
+        description: description,
+        content: content,
+        author: "New Author",
+        url: "",
+        urlToImage: imageUrl,
+        publishedAt: DateTime.now().toIso8601String(),
+      );
+
+      await _articleRepository.submitArticle(newArticle);
+      _localArticleBloc.add(SubmitArticleEvent(newArticle));
       emit(const ArticleSubmissionSuccess());
     } catch (e) {
       emit(ArticleSubmissionError(e.toString()));
     }
-  }
-
-  Future<String> _saveImageLocally(File imageFile) async {
-    final directory = await getApplicationDocumentsDirectory();
-    final fileName = imageFile.uri.pathSegments.last;
-    final savedImagePath = '${directory.path}/$fileName';
-
-    final localImage = await imageFile.copy(savedImagePath);
-    return localImage.path;
   }
 }

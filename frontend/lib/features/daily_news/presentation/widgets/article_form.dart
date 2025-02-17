@@ -1,13 +1,14 @@
-import 'dart:io'; // ✅ Import for File handling
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/image_picker_widget.dart';
 
 class ArticleForm extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController titleController;
   final TextEditingController descriptionController;
   final TextEditingController contentController;
-  final void Function(File?)? onImagePicked;
+  // Changed callback type to accept Uint8List? (raw image bytes)
+  final void Function(Uint8List?)? onImagePicked;
 
   const ArticleForm({
     Key? key,
@@ -23,19 +24,6 @@ class ArticleForm extends StatefulWidget {
 }
 
 class _ArticleFormState extends State<ArticleForm> {
-  File? _selectedImage;
-  final ImagePicker _picker = ImagePicker();
-
-  Future<void> _pickImage() async {
-    final pickedImage = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedImage != null) {
-      setState(() {
-        _selectedImage = File(pickedImage.path);
-      });
-      widget.onImagePicked?.call(_selectedImage);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -54,35 +42,11 @@ class _ArticleFormState extends State<ArticleForm> {
                 value == null || value.isEmpty ? 'Title cannot be empty' : null,
           ),
           const SizedBox(height: 16),
-
-          // Image Picker Widget (moved before description)
-          GestureDetector(
-            onTap: _pickImage,
-            child: Container(
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey),
-              ),
-              child: _selectedImage == null
-                  ? const Center(
-                      child: Text('No Image Selected',
-                          style: TextStyle(color: Colors.black54)))
-                  : ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.file(
-                        _selectedImage!,
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                    ),
-            ),
+          // Image Picker Widget
+          ImagePickerWidget(
+            onImagePicked: widget.onImagePicked,
           ),
           const SizedBox(height: 16),
-
           // Description Input
           TextFormField(
             controller: widget.descriptionController,
@@ -96,7 +60,6 @@ class _ArticleFormState extends State<ArticleForm> {
                 : null,
           ),
           const SizedBox(height: 16),
-
           // Content Input
           TextFormField(
             controller: widget.contentController,

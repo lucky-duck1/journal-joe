@@ -1,4 +1,4 @@
-import 'dart:io'; // For File handling
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -8,10 +8,10 @@ import 'package:news_app_clean_architecture/features/daily_news/presentation/blo
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_bloc.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/bloc/article/local/local_article_state.dart';
 import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/article_form.dart';
-import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/image_picker_widget.dart'; // The custom image picker widget
-import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart'; // Import the repository
+import 'package:news_app_clean_architecture/features/daily_news/presentation/widgets/image_picker_widget.dart';
+import 'package:news_app_clean_architecture/features/daily_news/domain/repository/article_repository.dart';
 
-final sl = GetIt.instance; // Ensure dependency injection is used
+final sl = GetIt.instance;
 
 class AddArticlePage extends StatelessWidget {
   const AddArticlePage({Key? key}) : super(key: key);
@@ -23,7 +23,7 @@ class AddArticlePage extends StatelessWidget {
         BlocProvider(
           create: (context) => AddArticleCubit(
             context.read<LocalArticleBloc>(),
-            sl<ArticleRepository>(), // ✅ Corrected dependency injection
+            sl<ArticleRepository>(),
           ),
         ),
         BlocProvider(create: (context) => ImagePickerCubit()),
@@ -45,10 +45,12 @@ class _AddArticlePageBodyState extends State<AddArticlePageBody> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
-  File? _selectedImage;
 
-  // Handle image picking
-  void _onImagePicked(File? image) {
+  // Use Uint8List to store the selected image bytes.
+  Uint8List? _selectedImage;
+
+  // Updated callback: parameter is Uint8List? (not ImageData?)
+  void _onImagePicked(Uint8List? image) {
     setState(() {
       _selectedImage = image;
     });
@@ -102,11 +104,10 @@ class _AddArticlePageBodyState extends State<AddArticlePageBody> {
                       titleController: _titleController,
                       descriptionController: _descriptionController,
                       contentController: _contentController,
-                      onImagePicked: _onImagePicked, // Image picking callback
+                      onImagePicked:
+                          _onImagePicked, // Now matches type void Function(Uint8List?)?
                     ),
                     const SizedBox(height: 16),
-
-                    // Submit Button
                     ElevatedButton(
                       onPressed: state is ArticleSubmissionLoading
                           ? null
@@ -147,11 +148,18 @@ class _AddArticlePageBodyState extends State<AddArticlePageBody> {
         return;
       }
 
+      // Wrap the selected image bytes in an ImageData object.
+      // (Your cubit expects ImageData; see image_picker_cubit.dart for its definition.)
+      final imageData = ImageData(
+        bytes: _selectedImage!,
+        name: "article_${DateTime.now().millisecondsSinceEpoch}.jpg",
+      );
+
       context.read<AddArticleCubit>().submitArticle(
             title: title,
             description: description,
             content: content,
-            imageFile: _selectedImage, // Pass the selected image
+            imageData: imageData,
           );
     }
   }
