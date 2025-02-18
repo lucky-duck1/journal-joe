@@ -35,7 +35,7 @@ class ArticleEntity extends Equatable {
     ];
   }
 
-  // The copyWith method allows you to create a new instance with modified properties
+  // The copyWith method allows the creation of a new instance with modified properties
   ArticleEntity copyWith({
     int? id,
     String? author,

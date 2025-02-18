@@ -16,18 +16,10 @@ import 'package:news_app_clean_architecture/features/daily_news/data/repository/
 final sl = GetIt.instance;
 
 Future<void> initializeDependencies() async {
-  // final database =
-  //     await $FloorAppDatabase.databaseBuilder('app_database.db').build();
-  // sl.registerSingleton<AppDatabase>(database);
-
   // Dio
   sl.registerSingleton<Dio>(Dio());
 
-  // // Use the Mock Repository instead of the real one
-  // sl.registerSingleton<ArticleRepository>(
-  //     MockArticleRepository()); // Register the Mock Repository
-
-  // Use the Firebase Repository instead of the Mock one
+  // Firebase Repository instead of the Mock one
   sl.registerLazySingleton<ArticleRepository>(
     () => FirebaseArticleRepository(),
   ); // Register the Firebase Repository

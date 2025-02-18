@@ -58,13 +58,10 @@ class ArticleRepositoryImpl implements ArticleRepository {
   @override
   Future<void> submitArticle(ArticleEntity article) async {
     try {
-      // In a real-world scenario, you would send this to a backend
       print("Submitting article: ${article.title}");
 
-      // Simulate API call delay
       await Future.delayed(const Duration(seconds: 1));
 
-      // Log submission success
       print("Article submitted successfully: ${article.title}");
     } catch (e) {
       throw Exception("Failed to submit article: $e");

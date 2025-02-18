@@ -31,7 +31,6 @@ class MyApp extends StatelessWidget {
           create: (context) => sl()..add(const GetArticles()),
         ),
         BlocProvider<LocalArticleBloc>(
-          // Ensure LocalArticleBloc is globally available
           create: (context) => sl<LocalArticleBloc>(),
         ),
       ],

@@ -56,7 +56,7 @@ class MockArticleRepository implements ArticleRepository {
     _savedArticles.removeWhere((savedArticle) => savedArticle.id == article.id);
   }
 
-  // ✅ Ensure Unique IDs When Submitting Articles
+  // Ensure Unique IDs When Submitting Articles
   @override
   Future<void> submitArticle(ArticleEntity article) async {
     await Future.delayed(const Duration(seconds: 1));

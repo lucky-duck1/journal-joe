@@ -11,7 +11,7 @@ class LocalArticleBloc extends Bloc<LocalArticlesEvent, LocalArticlesState> {
   final GetSavedArticleUseCase _getSavedArticleUseCase;
   final SaveArticleUseCase _saveArticleUseCase;
   final RemoveArticleUseCase _removeArticleUseCase;
-  final ArticleRepository _articleRepository; // ✅ Ensure repository is injected
+  final ArticleRepository _articleRepository; // Ensure repository is injected
 
   LocalArticleBloc(
     this._getSavedArticleUseCase,
@@ -23,10 +23,10 @@ class LocalArticleBloc extends Bloc<LocalArticlesEvent, LocalArticlesState> {
     on<RemoveArticle>(_onRemoveArticle);
     on<SaveArticle>(_onSaveArticle);
     on<SubmitArticleEvent>(
-        _onSubmitArticle); // ✅ Add handler for SubmitArticleEvent
+        _onSubmitArticle); // Add handler for SubmitArticleEvent
   }
 
-  /// ✅ Fetch saved articles
+  /// Fetch saved articles
   Future<void> _onGetSavedArticles(
       GetSavedArticles event, Emitter<LocalArticlesState> emit) async {
     try {
@@ -38,23 +38,21 @@ class LocalArticleBloc extends Bloc<LocalArticlesEvent, LocalArticlesState> {
     }
   }
 
-  /// ✅ Remove article from saved list
+  /// Remove article from saved list
   Future<void> _onRemoveArticle(
       RemoveArticle event, Emitter<LocalArticlesState> emit) async {
     try {
       await _removeArticleUseCase(
-          params: event.article); // ✅ Remove from database
-      final updatedArticles =
-          await _getSavedArticleUseCase(); // ✅ Fetch new list
+          params: event.article); // Remove from database
+      final updatedArticles = await _getSavedArticleUseCase(); // Fetch new list
       emit(const ArticleSubmissionSuccess());
-      emit(
-          LocalArticlesDone(updatedArticles)); // ✅ Refresh UI with updated list
+      emit(LocalArticlesDone(updatedArticles)); // Refresh UI with updated list
     } catch (e) {
       emit(LocalArticlesError('Failed to remove article: ${e.toString()}'));
     }
   }
 
-  /// ✅ Save article to saved articles
+  /// Save article to saved articles
   Future<void> _onSaveArticle(
       SaveArticle event, Emitter<LocalArticlesState> emit) async {
     try {
@@ -67,7 +65,7 @@ class LocalArticleBloc extends Bloc<LocalArticlesEvent, LocalArticlesState> {
     }
   }
 
-  /// ✅ Submit a new article to the repository
+  /// Submit a new article to the repository
   Future<void> _onSubmitArticle(
       SubmitArticleEvent event, Emitter<LocalArticlesState> emit) async {
     try {
@@ -75,12 +73,12 @@ class LocalArticleBloc extends Bloc<LocalArticlesEvent, LocalArticlesState> {
 
       await _articleRepository.submitArticle(event.article);
 
-      // ✅ Fetch updated articles after submission
+      // Fetch updated articles after submission
       final updatedArticles = await _articleRepository.getNewsArticles();
 
       emit(ArticleSubmissionSuccess()); // Show success first
-      emit(LocalArticlesDone(
-          updatedArticles.data ?? [])); // ✅ Update article list
+      emit(
+          LocalArticlesDone(updatedArticles.data ?? [])); // Update article list
     } catch (e) {
       emit(ArticleSubmissionError('Failed to submit article: ${e.toString()}'));
     }

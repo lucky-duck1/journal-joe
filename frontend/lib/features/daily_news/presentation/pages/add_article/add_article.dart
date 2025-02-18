@@ -104,8 +104,7 @@ class _AddArticlePageBodyState extends State<AddArticlePageBody> {
                       titleController: _titleController,
                       descriptionController: _descriptionController,
                       contentController: _contentController,
-                      onImagePicked:
-                          _onImagePicked, // Now matches type void Function(Uint8List?)?
+                      onImagePicked: _onImagePicked,
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
@@ -148,8 +147,6 @@ class _AddArticlePageBodyState extends State<AddArticlePageBody> {
         return;
       }
 
-      // Wrap the selected image bytes in an ImageData object.
-      // (Your cubit expects ImageData; see image_picker_cubit.dart for its definition.)
       final imageData = ImageData(
         bytes: _selectedImage!,
         name: "article_${DateTime.now().millisecondsSinceEpoch}.jpg",

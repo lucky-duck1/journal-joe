@@ -32,7 +32,7 @@ class LocalArticlesError extends LocalArticlesState {
   const LocalArticlesError(String error) : super(error: error);
 }
 
-/// ✅ New States for Article Submission
+/// New States for Article Submission
 class ArticleSubmissionLoading extends LocalArticlesState {
   const ArticleSubmissionLoading();
 }

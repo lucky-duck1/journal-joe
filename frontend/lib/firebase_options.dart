@@ -17,16 +17,26 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web; // ✅ Added Web Support
+      return web; // Web Support
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for this platform - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for this platform - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for this platform - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for this platform - '
@@ -45,7 +55,7 @@ class DefaultFirebaseOptions {
     databaseURL: 'https://journal-joe-fd4de-default-rtdb.firebaseio.com',
     projectId: 'journal-joe-fd4de',
     storageBucket:
-        'journal-joe-fd4de.firebasestorage.app', // ✅ Fixed storageBucket
+        'journal-joe-fd4de.firebasestorage.app', // Fixed storageBucket
     messagingSenderId: '627624562634',
     appId: '1:627624562634:web:0ea45d4c10a0a1ccf00933',
     measurementId: 'G-3JNVQPJWXW',
@@ -58,7 +68,7 @@ class DefaultFirebaseOptions {
     projectId: 'journal-joe-fd4de',
     databaseURL: 'https://journal-joe-fd4de-default-rtdb.firebaseio.com',
     storageBucket:
-        'journal-joe-fd4de.firebasestorage.app', // ✅ Fixed storageBucket
+        'journal-joe-fd4de.firebasestorage.app', // Fixed storageBucket
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -68,7 +78,7 @@ class DefaultFirebaseOptions {
     projectId: 'journal-joe-fd4de',
     databaseURL: 'https://journal-joe-fd4de-default-rtdb.firebaseio.com',
     storageBucket:
-        'journal-joe-fd4de.firebasestorage.app', // ✅ Fixed storageBucket
+        'journal-joe-fd4de.firebasestorage.app', // Fixed storageBucket
     iosBundleId: 'com.example.frontend',
   );
 
@@ -79,7 +89,7 @@ class DefaultFirebaseOptions {
     projectId: 'journal-joe-fd4de',
     databaseURL: 'https://journal-joe-fd4de-default-rtdb.firebaseio.com',
     storageBucket:
-        'journal-joe-fd4de.firebasestorage.app', // ✅ Fixed storageBucket
+        'journal-joe-fd4de.firebasestorage.app', // Fixed storageBucket
     iosBundleId: 'com.example.frontend',
   );
 }
