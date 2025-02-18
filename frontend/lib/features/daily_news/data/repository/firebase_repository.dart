@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -29,8 +28,10 @@ class FirebaseArticleRepository implements ArticleRepository {
       }).toList();
       return DataSuccess(articles);
     } catch (e) {
-      return DataFailed(DioError(
-          requestOptions: RequestOptions(path: ''), error: e.toString()));
+      return DataFailed(
+        // Using DioError to wrap error, as in your original code.
+        DioError(requestOptions: RequestOptions(path: ''), error: e.toString()),
+      );
     }
   }
 
@@ -51,30 +52,15 @@ class FirebaseArticleRepository implements ArticleRepository {
 
   @override
   Future<void> submitArticle(ArticleEntity article) async {
-    String? imageUrl;
-    if (article.urlToImage != null && article.urlToImage!.isNotEmpty) {
-      final file = File(article.urlToImage!);
-      if (await file.exists()) {
-        try {
-          final fileName = file.uri.pathSegments.last;
-          final ref = _storage.ref().child('articles_images/$fileName');
-          final uploadTask = await ref.putFile(file);
-          imageUrl = await uploadTask.ref.getDownloadURL();
-        } catch (e) {
-          print("Image upload failed: $e"); // Handle upload failure
-        }
-      }
-    }
-
+    // Simply use the URL provided in the ArticleEntity.
     final docId = article.id.toString();
-
     await _firestore.collection('articles').doc(docId).set({
       'id': article.id,
       'author': article.author,
       'title': article.title,
       'description': article.description,
       'url': article.url,
-      'urlToImage': imageUrl ?? '',
+      'urlToImage': article.urlToImage, // This should be the valid remote URL
       'publishedAt': article.publishedAt,
       'content': article.content,
       'createdAt': FieldValue.serverTimestamp(),

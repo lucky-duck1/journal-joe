@@ -44,7 +44,8 @@ class DefaultFirebaseOptions {
     authDomain: 'journal-joe-fd4de.firebaseapp.com',
     databaseURL: 'https://journal-joe-fd4de-default-rtdb.firebaseio.com',
     projectId: 'journal-joe-fd4de',
-    storageBucket: 'journal-joe-fd4de.appspot.com', // ✅ Fixed storageBucket
+    storageBucket:
+        'journal-joe-fd4de.firebasestorage.app', // ✅ Fixed storageBucket
     messagingSenderId: '627624562634',
     appId: '1:627624562634:web:0ea45d4c10a0a1ccf00933',
     measurementId: 'G-3JNVQPJWXW',
@@ -56,7 +57,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '627624562634',
     projectId: 'journal-joe-fd4de',
     databaseURL: 'https://journal-joe-fd4de-default-rtdb.firebaseio.com',
-    storageBucket: 'journal-joe-fd4de.appspot.com', // ✅ Fixed storageBucket
+    storageBucket:
+        'journal-joe-fd4de.firebasestorage.app', // ✅ Fixed storageBucket
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -65,7 +67,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '627624562634',
     projectId: 'journal-joe-fd4de',
     databaseURL: 'https://journal-joe-fd4de-default-rtdb.firebaseio.com',
-    storageBucket: 'journal-joe-fd4de.appspot.com', // ✅ Fixed storageBucket
+    storageBucket:
+        'journal-joe-fd4de.firebasestorage.app', // ✅ Fixed storageBucket
     iosBundleId: 'com.example.frontend',
   );
 
@@ -75,7 +78,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '627624562634',
     projectId: 'journal-joe-fd4de',
     databaseURL: 'https://journal-joe-fd4de-default-rtdb.firebaseio.com',
-    storageBucket: 'journal-joe-fd4de.appspot.com', // ✅ Fixed storageBucket
+    storageBucket:
+        'journal-joe-fd4de.firebasestorage.app', // ✅ Fixed storageBucket
     iosBundleId: 'com.example.frontend',
   );
 }

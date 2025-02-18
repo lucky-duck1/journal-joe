@@ -1,29 +1,9 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Rules for the articles collection
-    match /articles/{articleId} {
-      // Allow anyone to read articles.
-      allow read: if true;
-
-      // Allow create and update only if the user is authenticated and the document data meets the schema requirements.
-      allow create, update: if request.auth != null
-        // Ensure required fields exist and have the right type
-        && request.resource.data.title is string
-        && request.resource.data.description is string
-        && request.resource.data.content is string
-        && request.resource.data.author is string
-        //&& request.resource.data.category is string // Remove this line
-        && request.resource.data.publishedAt is string
-        && request.resource.data.urlToImage is string // Change thumbnailURL to urlToImage
-        // Validate the 'source' map has required fields.
-        /*&& request.resource.data.source is map // Remove this section
-        && request.resource.data.source.keys().hasAll(['id', 'name'])
-        && request.resource.data.source.id is string
-        && request.resource.data.source.name is string;*/
-
-      // For now, deny delete operations.
-      allow delete: if false;
+    match /{document=**} {
+      allow read, write: if request.time < timestamp.date(2024, 6, 12);
     }
   }
 }

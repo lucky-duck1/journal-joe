@@ -28,14 +28,24 @@ class AddArticleCubit extends Cubit<LocalArticlesState> {
     }
 
     emit(const ArticleSubmissionLoading());
+    print("Starting article submission...");
 
     try {
       String imageUrl = "";
       if (imageData != null) {
+        print("Uploading image: ${imageData.name}");
         final storageRef = _storage.ref().child('articles/${imageData.name}');
-        final uploadTask = storageRef.putData(imageData.bytes);
-        final snapshot = await uploadTask.whenComplete(() {});
+        final uploadTask = storageRef.putData(
+          imageData.bytes,
+          SettableMetadata(contentType: 'image/jpeg'),
+        );
+        final snapshot = await uploadTask.whenComplete(() {
+          print("Image upload task completed.");
+        });
         imageUrl = await snapshot.ref.getDownloadURL();
+        print("Image URL retrieved: $imageUrl");
+      } else {
+        print("No image provided.");
       }
 
       final newArticle = ArticleEntity(
@@ -48,11 +58,17 @@ class AddArticleCubit extends Cubit<LocalArticlesState> {
         urlToImage: imageUrl,
         publishedAt: DateTime.now().toIso8601String(),
       );
+      print("Created new article with ID: ${newArticle.id}");
 
+      print("Submitting article to Firestore...");
       await _articleRepository.submitArticle(newArticle);
+      print("Article submitted to Firestore successfully.");
+
       _localArticleBloc.add(SubmitArticleEvent(newArticle));
       emit(const ArticleSubmissionSuccess());
+      print("Article submission successful, state updated.");
     } catch (e) {
+      print("Error during article submission: $e");
       emit(ArticleSubmissionError(e.toString()));
     }
   }
